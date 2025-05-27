@@ -1,0 +1,68 @@
+from collections import deque
+start_state = (3, 3, 1) 
+goal_state = (0, 0, 0)
+moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+def is_valid(state):
+    m_left, c_left, _ = state
+    m_right = 3 - m_left
+    c_right = 3 - c_left
+    if m_left < 0 or c_left < 0 or m_left > 3 or c_left > 3:
+        return False
+    if m_left > 0 and m_left < c_left:
+        return False
+    if m_right > 0 and m_right < c_right:
+        return False
+    return True
+def get_successors(state):
+    successors = []
+    m, c, boat = state
+    for dm, dc in moves:
+        if boat == 1:  # Boat on left
+            new_state = (m - dm, c - dc, 0)
+        else:          # Boat on right
+            new_state = (m + dm, c + dc, 1)
+        if is_valid(new_state):
+            successors.append(new_state)
+    return successors
+def bfs(start, goal):
+    queue = deque()
+    queue.append((start, [start]))  # (state, path to state)
+    visited = set()
+    visited.add(start)
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state == goal:
+            return path
+        for next_state in get_successors(current_state):
+            if next_state not in visited:
+                visited.add(next_state)
+                queue.append((next_state, path + [next_state]))
+    return None
+def print_solution(solution):
+    print("Solution Steps:")
+    for step_num, state in enumerate(solution):
+        left_m, left_c, boat = state
+        right_m = 3 - left_m
+        right_c = 3 - left_c
+        boat_pos = "left" if boat == 1 else "right"
+        print(f"Step {step_num}: Left[{left_m}M, {left_c}C] --- Boat: {boat_pos} --- Right[{right_m}M, {right_c}C]")
+solution = bfs(start_state, goal_state)
+if solution:
+    print_solution(solution)
+else:
+    print("No solution found.")
+
+//output
+Solution Steps:
+Step 0: Left[3M, 3C] --- Boat: left --- Right[0M, 0C]
+Step 1: Left[3M, 1C] --- Boat: right --- Right[0M, 2C]
+Step 2: Left[3M, 2C] --- Boat: left --- Right[0M, 1C]
+Step 3: Left[3M, 0C] --- Boat: right --- Right[0M, 3C]
+Step 4: Left[3M, 1C] --- Boat: left --- Right[0M, 2C]
+Step 5: Left[1M, 1C] --- Boat: right --- Right[2M, 2C]
+Step 6: Left[2M, 2C] --- Boat: left --- Right[1M, 1C]
+Step 7: Left[0M, 2C] --- Boat: right --- Right[3M, 1C]
+Step 8: Left[0M, 3C] --- Boat: left --- Right[3M, 0C]
+Step 9: Left[0M, 1C] --- Boat: right --- Right[3M, 2C]
+Step 10: Left[1M, 1C] --- Boat: left --- Right[2M, 2C]
+Step 11: Left[0M, 0C] --- Boat: right --- Right[3M, 3C]
