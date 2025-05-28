@@ -1,0 +1,35 @@
+def dfs(graph, start_node):
+    visited = set()           # To keep track of visited nodes
+    stack = [start_node]      # Use a stack for DFS
+    traversal_order = []      # To record the traversal path
+
+    while stack:
+        node = stack.pop()
+
+        if node not in visited:
+            visited.add(node)
+            traversal_order.append(node)
+
+            # Add neighbors in reverse order to maintain left-to-right order
+            for neighbor in reversed(graph[node]):
+                if neighbor not in visited:
+                    stack.append(neighbor)
+
+    return traversal_order
+
+# Example graph (Adjacency List)
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D', 'E'],
+    'C': ['A', 'F'],
+    'D': ['B'],
+    'E': ['B', 'F'],
+    'F': ['C', 'E']
+}
+
+# Run DFS
+start = 'A'
+result = dfs(graph, start)
+
+# Print result
+print("DFS Traversal Order:", result)
