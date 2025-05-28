@@ -1,0 +1,34 @@
+import itertools
+
+# Distance matrix representation
+# graph[i][j] = distance from city i to city j
+graph = [
+    [0, 29, 20, 21],
+    [29, 0, 15, 17],
+    [20, 15, 0, 28],
+    [21, 17, 28, 0]
+]
+
+def tsp(graph):
+    n = len(graph)
+    cities = list(range(n))
+    min_path = None
+    min_cost = float('inf')
+
+    # Try all permutations of cities (except starting city)
+    for perm in itertools.permutations(cities[1:]):
+        path = [0] + list(perm) + [0]  # Start and end at city 0
+        cost = sum(graph[path[i]][path[i+1]] for i in range(n))
+
+        if cost < min_cost:
+            min_cost = cost
+            min_path = path
+
+    return min_path, min_cost
+
+# Run the algorithm
+best_path, best_cost = tsp(graph)
+
+# Output
+print("Best Path:", best_path)
+print("Minimum Cost:", best_cost)
