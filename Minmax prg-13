@@ -1,0 +1,107 @@
+import math
+
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+
+def is_winner(board, player):
+    # Check rows, columns, diagonals for a win
+    for i in range(3):
+        if all(cell == player for cell in board[i]):  # Row
+            return True
+        if all(board[j][i] == player for j in range(3)):  # Column
+            return True
+    if all(board[i][i] == player for i in range(3)):  # Diagonal
+        return True
+    if all(board[i][2 - i] == player for i in range(3)):  # Anti-diagonal
+        return True
+    return False
+
+def is_draw(board):
+    return all(cell != ' ' for row in board for cell in row)
+
+def get_empty_cells(board):
+    return [(r, c) for r in range(3) for c in range(3) if board[r][c] == ' ']
+
+def minimax(board, depth, is_maximizing):
+    if is_winner(board, 'O'):
+        return 10 - depth  # Prefer faster wins
+    if is_winner(board, 'X'):
+        return depth - 10  # Prefer slower losses
+    if is_draw(board):
+        return 0
+
+    if is_maximizing:
+        best_score = -math.inf
+        for (r, c) in get_empty_cells(board):
+            board[r][c] = 'O'
+            score = minimax(board, depth + 1, False)
+            board[r][c] = ' '
+            best_score = max(score, best_score)
+        return best_score
+    else:
+        best_score = math.inf
+        for (r, c) in get_empty_cells(board):
+            board[r][c] = 'X'
+            score = minimax(board, depth + 1, True)
+            board[r][c] = ' '
+            best_score = min(score, best_score)
+        return best_score
+
+def best_move(board):
+    best_score = -math.inf
+    move = None
+    for (r, c) in get_empty_cells(board):
+        board[r][c] = 'O'
+        score = minimax(board, 0, False)
+        board[r][c] = ' '
+        if score > best_score:
+            best_score = score
+            move = (r, c)
+    return move
+
+def tic_tac_toe_minimax():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    current_player = 'X'  # Human starts
+
+    while True:
+        print_board(board)
+
+        if current_player == 'X':
+            # Human turn
+            while True:
+                try:
+                    row = int(input("Enter row (0,1,2): "))
+                    col = int(input("Enter column (0,1,2): "))
+                    if row in [0,1,2] and col in [0,1,2]:
+                        if board[row][col] == ' ':
+                            board[row][col] = 'X'
+                            break
+                        else:
+                            print("Cell occupied. Try again.")
+                    else:
+                        print("Invalid input. Enter 0, 1, or 2.")
+                except ValueError:
+                    print("Invalid input. Enter numbers only.")
+        else:
+            # Computer turn
+            print("Computer is thinking...")
+            move = best_move(board)
+            if move:
+                board[move[0]][move[1]] = 'O'
+
+        # Check for win/draw
+        if is_winner(board, current_player):
+            print_board(board)
+            print(f"Player {current_player} wins!")
+            break
+        if is_draw(board):
+            print_board(board)
+            print("It's a draw!")
+            break
+
+        current_player = 'O' if current_player == 'X' else 'X'
+
+if __name__ == "__main__":
+    tic_tac_toe_minimax()
