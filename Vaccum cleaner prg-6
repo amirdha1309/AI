@@ -1,0 +1,42 @@
+# Vacuum Cleaner Problem using Simple Reflex Agent
+
+def vacuum_cleaner(environment, location):
+    actions = []
+    if environment[location] == 'Dirty':
+        actions.append(f'Location {location} is dirty. Action: Suck')
+        environment[location] = 'Clean'
+    else:
+        actions.append(f'Location {location} is already clean.')
+
+    if location == 'A':
+        actions.append('Move to B')
+        location = 'B'
+    else:
+        actions.append('Move to A')
+        location = 'A'
+
+    if environment[location] == 'Dirty':
+        actions.append(f'Location {location} is dirty. Action: Suck')
+        environment[location] = 'Clean'
+    else:
+        actions.append(f'Location {location} is already clean.')
+
+    return actions, environment
+
+# Example environment: both locations dirty
+environment = {
+    'A': 'Dirty',
+    'B': 'Dirty'
+}
+
+start_location = 'A'
+
+actions_taken, final_env = vacuum_cleaner(environment.copy(), start_location)
+
+print("Actions Taken:")
+for action in actions_taken:
+    print(action)
+
+print("\nFinal Environment State:")
+for loc, status in final_env.items():
+    print(f"{loc}: {status}")
